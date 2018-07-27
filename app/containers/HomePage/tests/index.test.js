@@ -6,98 +6,44 @@ import React from 'react';
 import { shallow, mount } from 'enzyme';
 import { IntlProvider } from 'react-intl';
 
-import ReposList from 'components/ReposList';
+import UsersList from 'components/UsersList';
+
+import { loadUsers } from 'containers/App/actions';
+
 import { HomePage, mapDispatchToProps } from '../index';
-import { changeUsername } from '../actions';
-import { loadRepos } from '../../App/actions';
 
 describe('<HomePage />', () => {
-  it('should render the repos list', () => {
+  it('should render the users list', () => {
     const renderedComponent = shallow(
-      <HomePage loading error={false} repos={[]} />
+      <HomePage loadUsers={() => null} users={[]} />
     );
-    expect(renderedComponent.contains(<ReposList loading error={false} repos={[]} />)).toEqual(true);
+    expect(renderedComponent.contains(<UsersList users={[]} />)).toEqual(true);
   });
 
-  it('should render fetch the repos on mount if a username exists', () => {
-    const submitSpy = jest.fn();
-    mount(
+  it('should render a non empty h1', () => {
+    const renderedComponent = mount(
       <IntlProvider locale="en">
-        <HomePage
-          username="Not Empty"
-          onChangeUsername={() => {}}
-          onSubmitForm={submitSpy}
-        />
+        <HomePage loadUsers={() => null} users={[]} />
       </IntlProvider>
     );
-    expect(submitSpy).toHaveBeenCalled();
-  });
-
-  it('should not call onSubmitForm if username is an empty string', () => {
-    const submitSpy = jest.fn();
-    mount(
-      <IntlProvider locale="en">
-        <HomePage
-          onChangeUsername={() => {}}
-          onSubmitForm={submitSpy}
-        />
-      </IntlProvider>
-    );
-    expect(submitSpy).not.toHaveBeenCalled();
-  });
-
-  it('should not call onSubmitForm if username is null', () => {
-    const submitSpy = jest.fn();
-    mount(
-      <IntlProvider locale="en">
-        <HomePage
-          username=""
-          onChangeUsername={() => {}}
-          onSubmitForm={submitSpy}
-        />
-      </IntlProvider>
-    );
-    expect(submitSpy).not.toHaveBeenCalled();
+    expect(renderedComponent.find('h1')).not.toBeNull();
+    expect(renderedComponent.find('h1').html().length).toBeGreaterThan(0);
   });
 
   describe('mapDispatchToProps', () => {
-    describe('onChangeUsername', () => {
+    describe('loadUsers', () => {
       it('should be injected', () => {
         const dispatch = jest.fn();
         const result = mapDispatchToProps(dispatch);
-        expect(result.onChangeUsername).toBeDefined();
+        expect(result.loadUsers).toBeDefined();
       });
 
-      it('should dispatch changeUsername when called', () => {
+      it('should dispatch loadUsers when called', () => {
         const dispatch = jest.fn();
         const result = mapDispatchToProps(dispatch);
-        const username = 'mxstbr';
-        result.onChangeUsername({ target: { value: username } });
-        expect(dispatch).toHaveBeenCalledWith(changeUsername(username));
+        result.loadUsers();
+        expect(dispatch).toHaveBeenCalledWith(loadUsers());
       });
-    });
-  });
-
-  describe('onSubmitForm', () => {
-    it('should be injected', () => {
-      const dispatch = jest.fn();
-      const result = mapDispatchToProps(dispatch);
-      expect(result.onSubmitForm).toBeDefined();
-    });
-
-    it('should dispatch loadRepos when called', () => {
-      const dispatch = jest.fn();
-      const result = mapDispatchToProps(dispatch);
-      result.onSubmitForm();
-      expect(dispatch).toHaveBeenCalledWith(loadRepos());
-    });
-
-    it('should preventDefault if called with event', () => {
-      const preventDefault = jest.fn();
-      const result = mapDispatchToProps(() => {});
-      const evt = { preventDefault };
-      result.onSubmitForm(evt);
-      expect(preventDefault).toHaveBeenCalledWith();
     });
   });
 });

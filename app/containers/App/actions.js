@@ -16,49 +16,135 @@
  */
 
 import {
-  LOAD_REPOS,
-  LOAD_REPOS_SUCCESS,
-  LOAD_REPOS_ERROR,
+  LOAD_USERS,
+  LOAD_USERS_SUCCESS,
+  LOAD_USERS_ERROR,
+  LOAD_USER,
+  LOAD_USER_SUCCESS,
+  LOAD_USER_ERROR,
+  EDIT_USER,
+  EDIT_USER_ERROR,
+  EDIT_USER_SUCCESS,
 } from './constants';
 
 /**
- * Load the repositories, this action starts the request saga
+ * Load the users, this action starts the request saga
  *
- * @return {object} An action object with a type of LOAD_REPOS
+ * @return {object} An action object with a type of LOAD_USERS
  */
-export function loadRepos(username) {
+export function loadUsers() {
   return {
-    type: LOAD_REPOS,
-    username,
+    type: LOAD_USERS,
   };
 }
 
 /**
- * Dispatched when the repositories are loaded by the request saga
+ * Dispatched when the users are loaded by the request saga
  *
- * @param  {array} repos The repository data
- * @param  {string} username The current username
+ * @param  {array} users The users data
  *
- * @return {object}      An action object with a type of LOAD_REPOS_SUCCESS passing the repos
+ * @return {object}      An action object with a type of LOAD_USERS_SUCCESS passing the users
  */
-export function reposLoaded(repos, username) {
+export function usersLoaded(users) {
   return {
-    type: LOAD_REPOS_SUCCESS,
-    repos,
-    username,
+    type: LOAD_USERS_SUCCESS,
+    users,
   };
 }
 
 /**
- * Dispatched when loading the repositories fails
+ * Dispatched when loading the users fails
  *
  * @param  {object} error The error
  *
- * @return {object}       An action object with a type of LOAD_REPOS_ERROR passing the error
+ * @return {object}       An action object with a type of LOAD_USERS_ERROR passing the error
  */
-export function repoLoadingError(error) {
+export function usersLoadingError(error) {
   return {
-    type: LOAD_REPOS_ERROR,
+    type: LOAD_USERS_ERROR,
+    error,
+  };
+}
+
+/**
+ * Load the users, this action starts the request saga
+ * @param  {string} uid The error
+ *
+ * @return {object} An action object with a type of LOAD_USERS
+ */
+export function loadUser(uid) {
+  return {
+    type: LOAD_USER,
+    uid,
+  };
+}
+
+/**
+ * Dispatched when the users are loaded by the request saga
+ *
+ * @param  {object} user The user data
+ *
+ * @return {object}      An action object with a type of LOAD_USERS_SUCCESS passing the users
+ */
+export function userLoaded(user) {
+  return {
+    type: LOAD_USER_SUCCESS,
+    user,
+  };
+}
+
+/**
+ * Dispatched when loading the users fails
+ *
+ * @param  {object} error The error
+ *
+ * @return {object}       An action object with a type of LOAD_USERS_ERROR passing the error
+ */
+export function userLoadingError(error) {
+  return {
+    type: LOAD_USER_ERROR,
+    error,
+  };
+}
+
+/**
+ * Load the users, this action starts the request saga
+ *
+ * @param  {object} user The error
+ *
+ * @return {object} An action object with a type of LOAD_USERS
+ */
+export function editUser(user) {
+  return {
+    type: EDIT_USER,
+    user,
+  };
+}
+
+/**
+ * Dispatched when the users are loaded by the request saga
+ *
+ * @param  {object} user The user data
+ *
+ * @return {object}      An action object with a type of LOAD_USERS_SUCCESS passing the user
+ */
+export function userEdited(user) {
+  return {
+    type: EDIT_USER_SUCCESS,
+    user,
+  };
+}
+
+/**
+ * Dispatched when loading the users fails
+ *
+ * @param  {object} error The error
+ *
+ * @return {object}       An action object with a type of LOAD_USERS_ERROR passing the error
+ */
+export function userEditingError(error) {
+  return {
+    type: EDIT_USER_ERROR,
     error,
   };
 }

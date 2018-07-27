@@ -1,40 +1,41 @@
 /**
- * Gets the repositories of the user from Github
+ * Gets the users of the user from Github
  */
 
-import { take, call, put, select, cancel, takeLatest } from 'redux-saga/effects';
+import { take, call, put, cancel, takeLatest } from 'redux-saga/effects';
 import { LOCATION_CHANGE } from 'react-router-redux';
-import { LOAD_REPOS } from 'containers/App/constants';
-import { reposLoaded, repoLoadingError } from 'containers/App/actions';
+import { LOAD_USERS } from 'containers/App/constants';
+import { usersLoaded, usersLoadingError } from 'containers/App/actions';
 
 import request from 'utils/request';
-import { makeSelectUsername } from 'containers/HomePage/selectors';
+
+import Api from 'containers/App/model/api';
 
 /**
- * Github repos request/response handler
+ * users request/response handler
  */
-export function* getRepos() {
+export function* getUsers() {
   // Select username from store
-  const username = yield select(makeSelectUsername());
-  const requestURL = `https://api.github.com/users/${username}/repos?type=all&sort=updated`;
+  const requestURL = `${Api.basePath}users`;
 
   try {
     // Call our request helper (see 'utils/request')
-    const repos = yield call(request, requestURL);
-    yield put(reposLoaded(repos, username));
+    const users = yield call(request, requestURL);
+    yield put(usersLoaded(users));
   } catch (err) {
-    yield put(repoLoadingError(err));
+    const e = yield err;
+    yield put(usersLoadingError(e));
   }
 }
 
 /**
  * Root saga manages watcher lifecycle
  */
-export function* githubData() {
-  // Watches for LOAD_REPOS actions and calls getRepos when one comes in.
+export function* usersData() {
+  // Watches for LOAD_USERS actions and calls getRepos when one comes in.
   // By using `takeLatest` only the result of the latest API call is applied.
   // It returns task descriptor (just like fork) so we can continue execution
-  const watcher = yield takeLatest(LOAD_REPOS, getRepos);
+  const watcher = yield takeLatest(LOAD_USERS, getUsers);
 
   // Suspend execution until location changes
   yield take(LOCATION_CHANGE);
@@ -42,6 +43,4 @@ export function* githubData() {
 }
 
 // Bootstrap sagas
-export default [
-  githubData,
-];
+export default [usersData];

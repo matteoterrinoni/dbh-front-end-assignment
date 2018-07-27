@@ -1,52 +1,140 @@
 import {
-  LOAD_REPOS,
-  LOAD_REPOS_SUCCESS,
-  LOAD_REPOS_ERROR,
+  LOAD_USERS,
+  LOAD_USERS_SUCCESS,
+  LOAD_USERS_ERROR,
+  LOAD_USER,
+  LOAD_USER_SUCCESS,
+  LOAD_USER_ERROR,
+  EDIT_USER,
+  EDIT_USER_SUCCESS,
+  EDIT_USER_ERROR,
 } from '../constants';
 
 import {
-  loadRepos,
-  reposLoaded,
-  repoLoadingError,
+  loadUsers,
+  usersLoaded,
+  usersLoadingError,
+  loadUser,
+  userLoaded,
+  userLoadingError,
+  editUser,
+  userEdited,
+  userEditingError,
 } from '../actions';
 
 describe('App Actions', () => {
-  describe('loadRepos', () => {
+  describe('loadUsers', () => {
     it('should return the correct type', () => {
       const expectedResult = {
-        type: LOAD_REPOS,
-        username: undefined,
+        type: LOAD_USERS,
       };
 
-      expect(loadRepos()).toEqual(expectedResult);
+      expect(loadUsers()).toEqual(expectedResult);
     });
   });
 
-  describe('reposLoaded', () => {
-    it('should return the correct type and the passed repos', () => {
+  describe('usersLoaded', () => {
+    it('should return the correct type and the passed users', () => {
       const fixture = ['Test'];
-      const username = 'test';
       const expectedResult = {
-        type: LOAD_REPOS_SUCCESS,
-        repos: fixture,
-        username,
+        type: LOAD_USERS_SUCCESS,
+        users: fixture,
       };
 
-      expect(reposLoaded(fixture, username)).toEqual(expectedResult);
+      expect(usersLoaded(fixture)).toEqual(expectedResult);
     });
   });
 
-  describe('repoLoadingError', () => {
+  describe('usersLoadingError', () => {
     it('should return the correct type and the error', () => {
       const fixture = {
         msg: 'Something went wrong!',
       };
       const expectedResult = {
-        type: LOAD_REPOS_ERROR,
+        type: LOAD_USERS_ERROR,
         error: fixture,
       };
 
-      expect(repoLoadingError(fixture)).toEqual(expectedResult);
+      expect(usersLoadingError(fixture)).toEqual(expectedResult);
+    });
+  });
+
+  describe('loadUser', () => {
+    it('should return the correct type and uid', () => {
+      const fixture = 111;
+
+      const expectedResult = {
+        type: LOAD_USER,
+        uid: fixture,
+      };
+
+      expect(loadUser(fixture)).toEqual(expectedResult);
+    });
+  });
+
+  describe('userLoaded', () => {
+    it('should return the correct type and user', () => {
+      const fixture = {
+        id: 111,
+      };
+      const expectedResult = {
+        type: LOAD_USER_SUCCESS,
+        user: fixture,
+      };
+
+      expect(userLoaded(fixture)).toEqual(expectedResult);
+    });
+  });
+
+  describe('userLoadingError', () => {
+    it('should return the correct type and error', () => {
+      const fixture = 'error';
+      const expectedResult = {
+        type: LOAD_USER_ERROR,
+        error: fixture,
+      };
+
+      expect(userLoadingError(fixture)).toEqual(expectedResult);
+    });
+  });
+
+  describe('editUser', () => {
+    it('should return the correct type and user', () => {
+      const fixture = {
+        id: 111,
+      };
+      const expectedResult = {
+        type: EDIT_USER,
+        user: fixture,
+      };
+
+      expect(editUser(fixture)).toEqual(expectedResult);
+    });
+  });
+
+  describe('userEdited', () => {
+    it('should return the correct type and user', () => {
+      const fixture = {
+        id: 111,
+      };
+      const expectedResult = {
+        type: EDIT_USER_SUCCESS,
+        user: fixture,
+      };
+
+      expect(userEdited(fixture)).toEqual(expectedResult);
+    });
+  });
+
+  describe('userEditingError', () => {
+    it('should return the correct type and error', () => {
+      const fixture = 'error';
+      const expectedResult = {
+        type: EDIT_USER_ERROR,
+        error: fixture,
+      };
+
+      expect(userEditingError(fixture)).toEqual(expectedResult);
     });
   });
 });

@@ -11,17 +11,15 @@ import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet';
 import styled from 'styled-components';
 
-import Header from 'components/Header';
-import Footer from 'components/Footer';
-import withProgressBar from 'components/ProgressBar';
+import Style from 'style';
 
 const AppWrapper = styled.div`
-  max-width: calc(768px + 16px * 2);
   margin: 0 auto;
   display: flex;
-  min-height: 100%;
-  padding: 0 16px;
+  padding: 0;
   flex-direction: column;
+  min-height: 100vh;
+  background: ${Style.lighterGray};
 `;
 
 export function App(props) {
@@ -33,9 +31,7 @@ export function App(props) {
       >
         <meta name="description" content="A React.js Boilerplate application" />
       </Helmet>
-      <Header />
       {React.Children.toArray(props.children)}
-      <Footer />
     </AppWrapper>
   );
 }
@@ -44,4 +40,4 @@ App.propTypes = {
   children: PropTypes.node,
 };
 
-export default withProgressBar(App);
+export default App;

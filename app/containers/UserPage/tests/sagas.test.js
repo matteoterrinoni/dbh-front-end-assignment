@@ -6,67 +6,112 @@ import { take, put, cancel, takeLatest } from 'redux-saga/effects';
 import { createMockTask } from 'redux-saga/utils';
 import { LOCATION_CHANGE } from 'react-router-redux';
 
-import { LOAD_REPOS } from 'containers/App/constants';
-import { reposLoaded, repoLoadingError } from 'containers/App/actions';
+import { LOAD_USER, EDIT_USER } from 'containers/App/constants';
+import {
+  userLoaded,
+  userLoadingError,
+  userEdited,
+  userEditingError,
+} from 'containers/App/actions';
 
-import { getRepos, githubData } from '../sagas';
-
-const username = 'mxstbr';
+import { getUser, userData, editUser, editUserData } from '../sagas';
 
 /* eslint-disable redux-saga/yield-effects */
-describe('getRepos Saga', () => {
-  let getReposGenerator;
+describe('getUser Saga', () => {
+  let getUserGenerator;
 
   // We have to test twice, once for a successful load and once for an unsuccessful one
   // so we do all the stuff that happens beforehand automatically in the beforeEach
   beforeEach(() => {
-    getReposGenerator = getRepos({ username });
+    getUserGenerator = getUser({ uid: 1 });
 
-    const callDescriptor = getReposGenerator.next(username).value;
+    const callDescriptor = getUserGenerator.next().value;
     expect(callDescriptor).toMatchSnapshot();
   });
 
-  it('should dispatch the reposLoaded action if it requests the data successfully', () => {
-    const response = [{
-      name: 'First repo',
-    }, {
-      name: 'Second repo',
-    }];
-    const putDescriptor = getReposGenerator.next(response).value;
-    expect(putDescriptor).toEqual(put(reposLoaded(response, username)));
+  it('should dispatch the userLoaded action if it requests the data successfully', () => {
+    const response = [
+      {
+        id: 1,
+      },
+    ];
+    const putDescriptor = getUserGenerator.next(response).value;
+    expect(putDescriptor).toEqual(put(userLoaded(response)));
   });
 
-  it('should call the repoLoadingError action if the response errors', () => {
+  it('should call the usersLoadingError action if the response errors', () => {
     const response = new Error('Some error');
-    const putDescriptor = getReposGenerator.throw(response).value;
-    expect(putDescriptor).toEqual(put(repoLoadingError(response)));
+    const error = getUserGenerator.throw(response).value;
+    const putDescriptor = getUserGenerator.next(error).value;
+    expect(putDescriptor).toEqual(put(userLoadingError(response)));
   });
 });
 
-describe('githubDataSaga Saga', () => {
-  let generator;
-  let taskMock;
+/* eslint-disable redux-saga/yield-effects */
+describe('editUser Saga', () => {
+  let editUserGenerator;
 
+  const user = { id: 1 };
+
+  // We have to test twice, once for a successful load and once for an unsuccessful one
+  // so we do all the stuff that happens beforehand automatically in the beforeEach
   beforeEach(() => {
-    generator = githubData();
-    taskMock = createMockTask();
+    editUserGenerator = editUser({ user });
+
+    const callDescriptor = editUserGenerator.next().value;
+    expect(callDescriptor).toMatchSnapshot();
   });
 
-  it('should start task to watch for LOAD_REPOS action', () => {
-    const takeLatestDescriptor = generator.next().value;
-    expect(takeLatestDescriptor).toEqual(takeLatest(LOAD_REPOS, getRepos));
+  it('should dispatch the userEdited action if it requests the data successfully', () => {
+    const response = user;
+    const putDescriptor = editUserGenerator.next(user).value;
+    expect(putDescriptor).toEqual(put(userEdited(response)));
+  });
+
+  it('should call the usersEditingError action if the response errors', () => {
+    const response = new Error('Some error');
+    const error = editUserGenerator.throw(response).value;
+    const putDescriptor = editUserGenerator.next(error).value;
+    expect(putDescriptor).toEqual(put(userEditingError(response)));
+  });
+});
+
+describe('userData Saga', () => {
+  const userDataSaga = userData();
+  const mockedTask = createMockTask();
+
+  it('should start task to watch for LOAD_USER action', () => {
+    const takeLatestDescriptor = userDataSaga.next().value;
+    expect(takeLatestDescriptor).toEqual(takeLatest(LOAD_USER, getUser));
   });
 
   it('should yield until LOCATION_CHANGE action', () => {
-    generator.next();
-    const takeDescriptor = generator.next();
-    expect(takeDescriptor.value).toEqual(take(LOCATION_CHANGE));
+    const takeDescriptor = userDataSaga.next(mockedTask).value;
+    expect(takeDescriptor).toEqual(take(LOCATION_CHANGE));
   });
 
-  it('should cancel after LOCATION_CHANGE action', () => {
-    generator.next();
-    generator.next(taskMock);
-    const cancelDescriptor = generator.next();
-    expect(cancelDescriptor.value).toEqual(cancel(taskMock));
+  it('should cancel the forked task when LOCATION_CHANGE happens', () => {
+    const cancelDescriptor = userDataSaga.next().value;
+    expect(cancelDescriptor).toEqual(cancel(mockedTask));
+  });
+});
+
+describe('editUserData Saga', () => {
+  const editUserDataSaga = editUserData();
+  const mockedTask = createMockTask();
+
+  it('should start task to watch for EDIT_USER action', () => {
+    const takeLatestDescriptor = editUserDataSaga.next().value;
+    expect(takeLatestDescriptor).toEqual(takeLatest(EDIT_USER, editUser));
+  });
+
+  it('should yield until LOCATION_CHANGE action', () => {
+    const takeDescriptor = editUserDataSaga.next(mockedTask).value;
+    expect(takeDescriptor).toEqual(take(LOCATION_CHANGE));
+  });
+
+  it('should cancel the forked task when LOCATION_CHANGE happens', () => {
+    const cancelDescriptor = editUserDataSaga.next().value;
+    expect(cancelDescriptor).toEqual(cancel(mockedTask));
   });
 });

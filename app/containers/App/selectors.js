@@ -3,28 +3,25 @@
  */
 
 import { createSelector } from 'reselect';
+import { Users } from '../UserPage/model';
 
 const selectGlobal = (state) => state.get('global');
 
-const makeSelectCurrentUser = () => createSelector(
-  selectGlobal,
-  (globalState) => globalState.get('currentUser')
-);
+const makeSelectLoading = () =>
+  createSelector(selectGlobal, (globalState) => globalState.get('loading'));
 
-const makeSelectLoading = () => createSelector(
-  selectGlobal,
-  (globalState) => globalState.get('loading')
-);
+const makeSelectError = () =>
+  createSelector(selectGlobal, (globalState) => globalState.get('error'));
 
-const makeSelectError = () => createSelector(
-  selectGlobal,
-  (globalState) => globalState.get('error')
-);
+const makeSelectUsers = () =>
+  createSelector(selectGlobal, (globalState) =>
+    globalState.getIn(['data', 'users'])
+  );
 
-const makeSelectRepos = () => createSelector(
-  selectGlobal,
-  (globalState) => globalState.getIn(['userData', 'repositories'])
-);
+const makeSelectUser = (uid) =>
+  createSelector(selectGlobal, (globalState) =>
+    Users(globalState.getIn(['data', 'users'])).find(uid)
+  );
 
 const makeSelectLocationState = () => {
   let prevRoutingState;
@@ -44,9 +41,9 @@ const makeSelectLocationState = () => {
 
 export {
   selectGlobal,
-  makeSelectCurrentUser,
   makeSelectLoading,
   makeSelectError,
-  makeSelectRepos,
+  makeSelectUsers,
+  makeSelectUser,
   makeSelectLocationState,
 };

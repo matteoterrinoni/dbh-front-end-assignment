@@ -2,10 +2,10 @@ import { fromJS } from 'immutable';
 
 import {
   selectGlobal,
-  makeSelectCurrentUser,
   makeSelectLoading,
   makeSelectError,
-  makeSelectRepos,
+  makeSelectUsers,
+  makeSelectUser,
   makeSelectLocationState,
 } from '../selectors';
 
@@ -16,19 +16,6 @@ describe('selectGlobal', () => {
       global: globalState,
     });
     expect(selectGlobal(mockedState)).toEqual(globalState);
-  });
-});
-
-describe('makeSelectCurrentUser', () => {
-  const currentUserSelector = makeSelectCurrentUser();
-  it('should select the current user', () => {
-    const username = 'mxstbr';
-    const mockedState = fromJS({
-      global: {
-        currentUser: username,
-      },
-    });
-    expect(currentUserSelector(mockedState)).toEqual(username);
   });
 });
 
@@ -58,18 +45,36 @@ describe('makeSelectError', () => {
   });
 });
 
-describe('makeSelectRepos', () => {
-  const reposSelector = makeSelectRepos();
-  it('should select the repos', () => {
-    const repositories = fromJS([]);
+describe('makeSelectUsers', () => {
+  const usersSelector = makeSelectUsers();
+  it('should select the users', () => {
+    const users = fromJS([]);
     const mockedState = fromJS({
       global: {
-        userData: {
-          repositories,
+        data: {
+          users,
         },
       },
     });
-    expect(reposSelector(mockedState)).toEqual(repositories);
+    expect(usersSelector(mockedState)).toEqual(users);
+  });
+});
+
+describe('makeSelectUser', () => {
+  const userSelector = makeSelectUser();
+
+  it('should select the user', () => {
+    const user = {
+      id: 1,
+    };
+    const mockedState = fromJS({
+      global: {
+        data: {
+          users: [user],
+        },
+      },
+    });
+    expect(userSelector(mockedState, 1).toJS()).toEqual(user);
   });
 });
 

@@ -1,68 +1,80 @@
 import React from 'react';
+
 import PropTypes from 'prop-types';
 
 import Helmet from 'react-helmet';
+
 import { connect } from 'react-redux';
 
-import ReposList from 'components/ReposList';
-import H1 from 'components/H1';
-import { FormattedMessage } from 'react-intl';
+import { loadUser as dispatchloadUser } from 'containers/App/actions';
 
-import { loadRepos as actionLoadRepos } from 'containers/App/actions';
-import { makeSelectRepos, makeSelectLoading, makeSelectError } from 'containers/App/selectors';
+import { makeSelectUser, makeSelectError } from 'containers/App/selectors';
 
-import messages from './messages';
+import PageError from 'components/PageError';
 
-export class UserPage extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
+import { ApiErrorPropType } from 'containers/App/model/apiError';
+
+import Editor from './editor';
+import { UserPropType } from './model';
+import UserPageStyled from './styled';
+import HomeLink from './homeLink';
+import Title from './title';
+
+export class UserPage extends React.PureComponent {
+  // eslint-disable-line react/prefer-stateless-function
   static propTypes = {
-    username: PropTypes.string,
-    loadRepos: PropTypes.func.isRequired,
-    loading: PropTypes.bool,
-    error: PropTypes.any,
-    repos: PropTypes.any,
-  }
+    uid: PropTypes.any.isRequired,
+    loadUser: PropTypes.func.isRequired,
+    error: ApiErrorPropType,
+    user: PropTypes.oneOfType([UserPropType, PropTypes.bool]),
+  };
 
   componentWillMount() {
-    const { username, loadRepos, repos, error } = this.props;
-    if (repos === false && error === false) {
-      loadRepos(username);
-    }
+    const { uid, loadUser } = this.props;
+    loadUser(uid);
   }
 
   render() {
-    const { username, loading, error, repos } = this.props;
+    const { uid, error, user } = this.props;
+    const username = (user && user.username) || uid;
+
     return (
-      <div>
+      <UserPageStyled>
         <Helmet
           title="User page"
           meta={[
-            { name: 'description', content: 'A React.js Boilerplate user page' },
+            {
+              name: 'description',
+              content: 'A React.js Boilerplate user page',
+            },
           ]}
         />
-        <em><FormattedMessage {...messages.ssrInfo} /></em>
-        <H1>
-          <FormattedMessage {...messages.header} values={{ username }} />
-        </H1>
-        <ReposList loading={loading} error={error} repos={repos} />
-      </div>
+
+        <HomeLink />
+
+        <Title username={username} />
+
+        <PageError error={error} />
+
+        <Editor user={user} error={error} />
+      </UserPageStyled>
     );
   }
 }
 
-export function mapStateToProps(state, ownProps) {
-  const { params: { username } } = ownProps;
-  return {
-    username,
-    repos: makeSelectRepos()(state),
-    loading: makeSelectLoading()(state),
-    error: makeSelectError()(state),
-  };
-}
+const mapStateToProps = (state, { params }) => ({
+  uid: params.uid,
+  user: makeSelectUser(params.uid)(state),
+  error: makeSelectError()(state),
+});
 
 export function mapDispatchToProps(dispatch) {
   return {
-    loadRepos: (username) => dispatch(actionLoadRepos(username)),
+    loadUser: (uid) => dispatch(dispatchloadUser(uid)),
   };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(UserPage);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(UserPage);

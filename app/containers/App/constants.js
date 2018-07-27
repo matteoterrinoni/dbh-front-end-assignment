@@ -9,7 +9,16 @@
  * export const YOUR_ACTION_CONSTANT = 'yourproject/YourContainer/YOUR_ACTION_CONSTANT';
  */
 
-export const LOAD_REPOS = 'boilerplate/App/LOAD_REPOS';
-export const LOAD_REPOS_SUCCESS = 'boilerplate/App/LOAD_REPOS_SUCCESS';
-export const LOAD_REPOS_ERROR = 'boilerplate/App/LOAD_REPOS_ERROR';
+export const LOAD_USERS = 'boilerplate/App/LOAD_USERS';
+export const LOAD_USERS_SUCCESS = 'boilerplate/App/LOAD_USERS_SUCCESS';
+export const LOAD_USERS_ERROR = 'boilerplate/App/LOAD_USERS_ERROR';
+
+export const LOAD_USER = 'boilerplate/App/LOAD_USER';
+export const LOAD_USER_SUCCESS = 'boilerplate/App/LOAD_USER_SUCCESS';
+export const LOAD_USER_ERROR = 'boilerplate/App/LOAD_USER_ERROR';
+
+export const EDIT_USER = 'boilerplate/App/EDIT_USER';
+export const EDIT_USER_SUCCESS = 'boilerplate/App/EDIT_USER_SUCCESS';
+export const EDIT_USER_ERROR = 'boilerplate/App/EDIT_USER_ERROR';
+
 export const DEFAULT_LOCALE = 'en';

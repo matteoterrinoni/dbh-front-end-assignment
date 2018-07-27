@@ -15,38 +15,29 @@ const loadModule = (cb) => (componentModule) => {
 
 function createChildRoutes(store) {
   // create reusable async injectors using getAsyncInjectors factory
-  const { injectReducer, injectSagas } = getAsyncInjectors(store);
+  const { injectSagas } = getAsyncInjectors(store);
 
   return [
     {
       path: '/',
       getComponent(nextState, cb) {
         const importModules = Promise.all([
-          import('containers/HomePage/reducer'),
           import('containers/HomePage/sagas'),
           import('containers/HomePage'),
         ]);
 
         const renderRoute = loadModule(cb);
 
-        importModules.then(([reducer, sagas, component]) => {
-          injectReducer('home', reducer.default);
+        importModules.then(([sagas, component]) => {
           injectSagas(sagas.default);
-
           renderRoute(component);
         });
 
         importModules.catch(errorLoading);
       },
-    }, {
-      path: '/features',
-      getComponent(nextState, cb) {
-        import('containers/FeaturePage')
-          .then(loadModule(cb))
-          .catch(errorLoading);
-      },
-    }, {
-      path: '/users/:username',
+    },
+    {
+      path: '/user-profile/:uid',
       name: 'user',
       getComponent(nextState, cb) {
         const importModules = Promise.all([
@@ -64,7 +55,8 @@ function createChildRoutes(store) {
 
         importModules.catch(errorLoading);
       },
-    }, {
+    },
+    {
       path: '*',
       getComponent(nextState, cb) {
         import('containers/NotFoundPage')

@@ -1,98 +1,91 @@
-import React from 'react';
-import { browserHistory } from 'react-router';
-import { IntlProvider, FormattedMessage } from 'react-intl';
-import { shallow, mount } from 'enzyme';
+/**
+ * Test the UserPage
+ */
 
-import H1 from 'components/H1';
-import configureStore from 'store';
-import messages from '../messages';
-import { UserPage, mapStateToProps, mapDispatchToProps } from '../index';
+import React from 'react';
+import { shallow } from 'enzyme';
+
+import { loadUser } from 'containers/App/actions';
+
+import PageError from 'components/PageError';
+
+import { UserPage, mapDispatchToProps } from '../index';
+
+import Editor from '../editor';
+import HomeLink from '../homeLink';
+import Title from '../title';
+
+let pageProps;
+
+const user = {
+  id: 1,
+  username: 'aaa',
+  email: 'aaa',
+};
 
 describe('<UserPage />', () => {
-  let loadReposSpy;
-  const username = 'johny';
-
   beforeEach(() => {
-    loadReposSpy = jest.fn();
-  });
-
-  it('should render its heading', () => {
-    const renderedComponent = shallow(
-      <UserPage loadRepos={loadReposSpy} username={username} />
-    );
-
-    expect(renderedComponent.contains(
-      <H1>
-        <FormattedMessage {...messages.header} values={{ username }} />
-      </H1>
-    )).toBe(true);
-  });
-
-  it('should load repos', () => {
-    mount(
-      <IntlProvider locale="en">
-        <UserPage
-          loadRepos={loadReposSpy}
-          username={username}
-          repos={false}
-          error={false}
-        />
-      </IntlProvider>
-    );
-
-    expect(loadReposSpy).toHaveBeenCalled();
-  });
-
-  it('should render the repos list', () => {
-    const renderedComponent = shallow(
-      <UserPage loadRepos={loadReposSpy} username={username} />
-    );
-    expect(renderedComponent.find('ReposList').length).toEqual(1);
-  });
-
-  describe('props', () => {
-    const store = configureStore({}, browserHistory);
-    const state = store.getState();
-    const ownProps = {
-      params: {
-        username,
-      },
+    pageProps = {
+      uid: user.id,
+      loadUser: () => null,
+      user,
+      error: false,
     };
+  });
 
-    let props;
-    let dispatchSpy;
+  it('should render the user editor', () => {
+    const renderedComponent = shallow(<UserPage {...pageProps} />);
+    expect(renderedComponent.containsMatchingElement(<Editor />)).toEqual(true);
+  });
 
-    beforeEach(() => {
-      dispatchSpy = jest.fn();
+  it('should render a link to the homepage', () => {
+    const renderedComponent = shallow(<UserPage {...pageProps} />);
+    expect(renderedComponent.containsMatchingElement(<HomeLink />)).toEqual(
+      true
+    );
+  });
 
-      props = {
-        ...mapStateToProps(state, ownProps),
-        ...mapDispatchToProps(dispatchSpy),
-      };
-    });
+  it('should render a Title', () => {
+    const renderedComponent = shallow(<UserPage {...pageProps} />);
+    expect(
+      renderedComponent.containsMatchingElement(
+        <Title username={pageProps.user.username} />
+      )
+    ).toEqual(true);
+  });
 
-    it('should get the username from params', () => {
-      expect(props.username).toEqual(username);
-    });
+  it('should render uid if user is not defined', () => {
+    pageProps.user = null;
+    const renderedComponent = shallow(<UserPage {...pageProps} />);
+    expect(
+      renderedComponent.containsMatchingElement(
+        <Title username={pageProps.uid} />
+      )
+    ).toEqual(true);
+  });
 
-    ['repos', 'error', 'loading'].forEach((propName) => {
-      describe(propName, () => {
-        it('should exist', () => {
-          expect(props[propName]).toBeDefined();
-        });
+  it('should render a PageError Comp', () => {
+    const renderedComponent = shallow(<UserPage {...pageProps} />);
+    expect(
+      renderedComponent.containsMatchingElement(
+        <PageError error={pageProps.error} />
+      )
+    ).toEqual(true);
+  });
+
+  describe('mapDispatchToProps', () => {
+    describe('loadUser', () => {
+      it('should be injected', () => {
+        const dispatch = jest.fn();
+        const result = mapDispatchToProps(dispatch);
+        expect(result.loadUser).toBeDefined();
       });
-    });
 
-    describe('loadRepos', () => {
-      let loadRepos;
-
-      beforeEach(() => {
-        loadRepos = props.loadRepos;
-      });
-
-      it('should dispatch action', () => {
-        loadRepos(username);
-        expect(dispatchSpy).toHaveBeenCalled();
+      it('should dispatch loadUser when called', () => {
+        const dispatch = jest.fn();
+        const result = mapDispatchToProps(dispatch);
+        result.loadUser(pageProps.uid);
+        expect(dispatch).toHaveBeenCalledWith(loadUser(pageProps.uid));
       });
     });
   });
