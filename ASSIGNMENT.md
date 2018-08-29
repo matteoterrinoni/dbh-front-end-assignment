@@ -1,7 +1,7 @@
 ## DBH Front-End assignment
 
 You may complete this assignment and then send us your work as an attachment (remember to include the `.git` folder) or
-published in a _private_ repository (invite _developer@daybreakhotels.com_).
+published in a _private_ repository.
 
 Thanks!
 
