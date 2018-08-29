@@ -1,6 +1,6 @@
 ## DBH Front-End assignment
 
-A simple implementation of [this assignment](ASSIGNMENT.MD) based on [react-boilerplate SSR](https://github.com/tomazy/react-boilerplate)
+A simple implementation of [this assignment](/ASSIGNMENT.MD) based on [react-boilerplate SSR](https://github.com/tomazy/react-boilerplate)
 
 ## Quick start
 
